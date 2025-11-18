@@ -1,800 +1,425 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wildberries Analytics Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        * {margin:0; padding:0; box-sizing:border-box;}
-        html {scroll-behavior: smooth;}
-        body {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#333; min-height:100vh; padding:20px;}
-        .container {max-width:1600px; margin:0 auto; background:#fff; border-radius:16px; box-shadow:0 25px 80px rgba(0,0,0,0.35); overflow:hidden;}
-        header {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:40px; text-align:center;}
-        header h1 {font-size:3em; margin-bottom:10px; font-weight:800;}
-        header p {font-size:1.2em; opacity:0.9;}
-        .tabs {display:flex; background:#f8f9fa; border-bottom:3px solid #667eea; overflow-x:auto; flex-wrap:wrap;}
-        .tab-button {padding:18px 28px; background:none; border:none; cursor:pointer; font-size:1em; color:#666; border-bottom:4px solid transparent; font-weight:600; user-select:none; transition:0.3s; white-space:nowrap;}
-        .tab-button:hover {background:#e8ecff; color:#667eea;}
-        .tab-button.active {color:#fff; background:#667eea; border-bottom-color:#764ba2;}
-        .tab-content {display:none; padding:40px; animation:fadeIn 0.4s;}
-        .tab-content.active {display:block;}
-        @keyframes fadeIn {from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);}}
-        h2 {color:#667eea; margin-bottom:25px; font-size:2em; border-bottom:3px solid #667eea; padding-bottom:15px;}
-        h3 {color:#667eea; margin-top:30px; margin-bottom:20px; font-size:1.4em;}
-        table {width:100%; border-collapse:collapse; background:#fff; font-size:0.95em; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);}
-        th, td {padding:14px; border-bottom:1px solid #e8e8e8; text-align:left;}
-        th {background:#667eea; color:#fff; position:sticky; top:0; z-index:10; font-weight:700;}
-        tbody tr:hover {background:#f5f5ff;}
-        .metrics-grid {display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:25px; margin-bottom:35px;}
-        .metric-card {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:25px; border-radius:12px; box-shadow:0 8px 24px rgba(102, 126, 234, 0.3); text-align:center;}
-        .metric-card h3 {color:#fff; font-size:1.1em; margin:0 0 12px 0; opacity:0.9;}
-        .metric-card .value {font-size:2.2em; font-weight:800;}
-        .metric-card .subtitle {font-size:0.9em; opacity:0.85; margin-top:8px;}
-        .status-badge {display:inline-block; padding:6px 16px; border-radius:20px; font-size:0.85em; font-weight:700;}
-        .status-effective {background:#4CAF50; color:#fff;}
-        .status-ineffective {background:#f44336; color:#fff;}
-        .chart-container {position:relative; height:500px; margin-bottom:40px; background:#fff; padding:25px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
-        .controls {display:flex; gap:20px; margin-bottom:20px; flex-wrap:wrap;}
-        select, input {padding:10px 14px; border-radius:6px; border:2px solid #ddd; font-size:1em; cursor:pointer; transition:0.3s;}
-        select:focus, input:focus {outline:none; border-color:#667eea; box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
-        .conclusion-block {background: linear-gradient(135deg, #f0f4ff 0%, #f5e6ff 100%); border-left:5px solid #667eea; padding:25px; margin-bottom:25px; border-radius:8px;}
-        .conclusion-block h3 {color:#667eea; margin:0 0 15px 0;}
-        .conclusion-block p {margin-bottom:10px; line-height:1.7; color:#333;}
-        .conclusion-block strong {color:#667eea; font-weight:700;}
-        .version-header {background:#667eea; color:#fff; padding:20px; margin-bottom:20px; border-radius:8px; font-size:1.2em; font-weight:700;}
-        .scroll-table {overflow-x:auto; border-radius:8px;}
-        button {padding:10px 20px; background:#667eea; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:0.3s;}
-        button:hover {background:#764ba2; transform:translateY(-2px); box-shadow:0 4px 12px rgba(102,126,234,0.3);}
-        .filter-section {background:#f5f5ff; padding:20px; border-radius:8px; margin-bottom:25px;}
-        .filter-section label {display:block; margin-bottom:8px; font-weight:600; color:#667eea;}
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wildberries Analytics Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* {margin:0; padding:0; box-sizing:border-box;}
+html {scroll-behavior: smooth;}
+body {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#333; min-height:100vh; padding:20px;}
+.container {max-width:1600px; margin:0 auto; background:#fff; border-radius:16px; box-shadow:0 25px 80px rgba(0,0,0,0.35); overflow:hidden;}
+header {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; padding:30px; text-align:center;}
+header h1 {font-size:2.5em; margin-bottom:10px; font-weight:800;}
+header p {font-size:1em; opacity:0.9;}
+.period-selector {background:#f0f4ff; padding:20px; border-bottom:2px solid #667eea; display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+.period-selector label {font-weight:700; color:#667eea; font-size:1.1em;}
+.period-selector select {padding:10px 16px; border-radius:8px; border:2px solid #667eea; font-size:1em; cursor:pointer; font-weight:600; background:#fff;}
+.tabs {display:flex; background:#f8f9fa; border-bottom:3px solid #667eea; overflow-x:auto; flex-wrap:wrap;}
+.tab-button {padding:18px 28px; background:none; border:none; cursor:pointer; font-size:1em; color:#666; border-bottom:4px solid transparent; font-weight:600; user-select:none; transition:0.3s; white-space:nowrap;}
+.tab-button:hover {background:#e8ecff; color:#667eea;}
+.tab-button.active {color:#fff; background:#667eea; border-bottom-color:#764ba2;}
+.tab-content {display:none; padding:40px; animation:fadeIn 0.4s;}
+.tab-content.active {display:block;}
+@keyframes fadeIn {from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);}}
+h2 {color:#667eea; margin-bottom:25px; font-size:2em; border-bottom:3px solid #667eea; padding-bottom:15px;}
+h3 {color:#667eea; margin-top:30px; margin-bottom:20px; font-size:1.4em;}
+table {width:100%; border-collapse:collapse; background:#fff; font-size:0.95em; margin-top:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+th, td {padding:14px; border-bottom:1px solid #e8e8e8; text-align:left;}
+th {background:#667eea; color:#fff; position:sticky; top:0; z-index:10; font-weight:700;}
+tbody tr:hover {background:#f5f5ff;}
+.metrics-grid {display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:20px; margin-bottom:35px;}
+.metric-card {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 24px rgba(102, 126, 234, 0.3); text-align:center;}
+.metric-card h3 {color:#fff; font-size:1em; margin:0 0 10px 0; opacity:0.9;}
+.metric-card .value {font-size:2em; font-weight:800;}
+.metric-card .subtitle {font-size:0.9em; opacity:0.85; margin-top:8px;}
+.scroll-table {overflow-x:auto; border-radius:8px;}
+.category-section {background:#f5f5ff; padding:20px; border-radius:12px; margin-bottom:30px; border-left:5px solid #667eea;}
+.category-header {font-size:1.3em; font-weight:700; color:#667eea; margin-bottom:15px;}
+button {padding:12px 24px; background:#667eea; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:0.3s; font-size:1em;}
+button:hover {background:#764ba2; transform:translateY(-2px); box-shadow:0 4px 12px rgba(102,126,234,0.3);}
+.period-info {background:#e3f2fd; border-left:5px solid #2196F3; padding:15px; margin-bottom:20px; border-radius:6px;}
+.period-info strong {color:#1565c0;}
+.top-item {background:linear-gradient(135deg, #fff9e6 0%, #ffe8cc 100%); padding:12px; border-radius:8px; margin-bottom:10px; border-left:4px solid #ffc107;}
+.chart-container {position:relative; height:400px; margin-bottom:30px;}
+</style>
 </head>
 <body>
 <div class="container">
-    <header>
-        <h1>Wildberries Analytics Dashboard</h1>
-        <p>Профессиональный отчет о финансовой деятельности и рекламных кампаниях</p>
-    </header>
-    
-    <div class="tabs">
-        <button class="tab-button active" onclick="switchTab('assets')">Товары и ассортимент</button>
-        <button class="tab-button" onclick="switchTab('finance')">Финансовый анализ по периодам</button>
-        <button class="tab-button" onclick="switchTab('advertising')">Рекламные кампании РК</button>
-        <button class="tab-button" onclick="switchTab('charts')">Аналитика и графики</button>
-        <button class="tab-button" onclick="switchTab('conclusions')">Итоги и рекомендации</button>
-    </div>
+<header>
+<h1>📊 Wildberries Analytics Dashboard</h1>
+<p>Полная аналитика с историей периодов и статистикой по товарам</p>
+</header>
 
-    <!-- ВКЛАДКА 1: ТОВАРЫ И АССОРТИМЕНТ -->
-    <div id="assets" class="tab-content active">
-        <h2>Товары и ассортимент</h2>
-        <div class="metrics-grid" id="assets-metrics"></div>
-        
-        <div class="filter-section">
-            <label for="category-filter">Фильтр по категориям:</label>
-            <select id="category-filter" onchange="filterItemsTable()">
-                <option value="">Все категории</option>
-                <option value="Постельное белье">Постельное белье</option>
-                <option value="Пледы">Пледы</option>
-                <option value="Подушки">Подушки</option>
-                <option value="Одеяла">Одеяла</option>
-            </select>
-        </div>
+<div class="period-selector">
+<label for="period-select">🗓️ Выберите период:</label>
+<select id="period-select" onchange="switchPeriod()">
+<option value="period1">10.10-11.11.2025 (Текущий период)</option>
+<option value="period0">10.09-10.10.2025 (Сентябрь-Октябрь)</option>
+</select>
+</div>
 
-        <h3>Полная статистика по товарам и разновидностям</h3>
-        <div class="scroll-table">
-            <table id="items-full-table">
-                <thead>
-                    <tr>
-                        <th>Категория</th>
-                        <th>Разновидность/Артикул</th>
-                        <th>Кол-во заказов (шт)</th>
-                        <th>% от категории</th>
-                        <th>% от всего</th>
-                        <th>Выручка</th>
-                        <th>Средняя цена</th>
-                        <th>Рейтинг</th>
-                    </tr>
-                </thead>
-                <tbody id="items-tbody"></tbody>
-            </table>
-        </div>
+<div class="tabs">
+<button class="tab-button active" onclick="switchTab('overview')">📈 Обзор</button>
+<button class="tab-button" onclick="switchTab('products')">📦 Товары и статистика</button>
+<button class="tab-button" onclick="switchTab('history')">📚 История периодов</button>
+<button class="tab-button" onclick="switchTab('charts')">📊 Графики</button>
+</div>
 
-        <h3>Топ-15 товаров по продажам</h3>
-        <div class="scroll-table">
-            <table id="top-items-table">
-                <thead>
-                    <tr>
-                        <th>Место</th>
-                        <th>Товар</th>
-                        <th>Категория</th>
-                        <th>Кол-во</th>
-                        <th>% от всего</th>
-                        <th>Выручка</th>
-                    </tr>
-                </thead>
-                <tbody id="top-items-tbody"></tbody>
-            </table>
-        </div>
-    </div>
+<!-- ВКЛАДКА 1: ОБЗОР -->
+<div id="overview" class="tab-content active">
+<div class="period-info">
+<strong>Период:</strong> <span id="period-name">10.10-11.11.2025</span>
+</div>
 
-    <!-- ВКЛАДКА 2: ФИНАНСОВЫЙ АНАЛИЗ ПО ПЕРИОДАМ -->
-    <div id="finance" class="tab-content">
-        <h2>Финансовый анализ по периодам</h2>
-        <div id="periods-content"></div>
-    </div>
+<h2>Ключевые показатели</h2>
+<div class="metrics-grid" id="metrics-container"></div>
 
-    <!-- ВКЛАДКА 3: РЕКЛАМНЫЕ КАМПАНИИ РК -->
-    <div id="advertising" class="tab-content">
-        <h2>Рекламные кампании РК</h2>
-        <div class="metrics-grid" id="adv-metrics"></div>
-        
-        <div class="filter-section">
-            <label for="rk-filter">Фильтр по статусу:</label>
-            <select id="rk-filter" onchange="filterRKTable()">
-                <option value="">Все кампании</option>
-                <option value="✅ ЭФФЕКТИВНО">Только эффективные (ROI ≥ 150%)</option>
-                <option value="❌ НЕЭФФЕКТИВНО">Только неэффективные (ROI < 150%)</option>
-            </select>
-        </div>
+<h2>Финансовая сводка</h2>
+<div class="scroll-table">
+<table id="finance-table">
+<thead>
+<tr><th>Показатель</th><th>Значение</th><th>% от выручки</th></tr>
+</thead>
+<tbody id="finance-tbody"></tbody>
+</table>
+</div>
+</div>
 
-        <h3>Топ-10 артикулов по ROI</h3>
-        <div class="scroll-table">
-            <table id="rk-top-table">
-                <thead>
-                    <tr>
-                        <th>Место</th>
-                        <th>Артикул</th>
-                        <th>Файл РК</th>
-                        <th>ROI %</th>
-                        <th>ROAS</th>
-                        <th>Затраты</th>
-                        <th>Выручка РК</th>
-                        <th>Заказов</th>
-                        <th>CAC</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody id="rk-top-tbody"></tbody>
-            </table>
-        </div>
+<!-- ВКЛАДКА 2: ТОВАРЫ И СТАТИСТИКА -->
+<div id="products" class="tab-content">
+<h2>📦 Статистика по товарам</h2>
 
-        <h3>Полная таблица рекламных кампаний</h3>
-        <div class="scroll-table">
-            <table id="rk-full-table">
-                <thead>
-                    <tr>
-                        <th>Артикул</th>
-                        <th>Файл РК</th>
-                        <th>ROI %</th>
-                        <th>ROAS</th>
-                        <th>Затраты</th>
-                        <th>Выручка РК</th>
-                        <th>Заказов</th>
-                        <th>CTR %</th>
-                        <th>CR %</th>
-                        <th>CPO</th>
-                        <th>CAC</th>
-                        <th>Средняя цена</th>
-                        <th>LTV/CAC</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody id="rk-full-tbody"></tbody>
-            </table>
-        </div>
+<h3>Общая информация</h3>
+<div class="metrics-grid">
+<div class="metric-card">
+<h3>Всего заказов</h3>
+<div class="value" id="total-orders">1,027</div>
+</div>
+<div class="metric-card">
+<h3>Товарных категорий</h3>
+<div class="value">4</div>
+</div>
+<div class="metric-card">
+<h3>Разновидностей</h3>
+<div class="value">29</div>
+</div>
+<div class="metric-card">
+<h3>ТОП-10 охватывают</h3>
+<div class="value">81.8%</div>
+<div class="subtitle">всех продаж</div>
+</div>
+</div>
 
-        <h3>Статистика по категориям РК</h3>
-        <div class="scroll-table">
-            <table id="rk-categories-table">
-                <thead>
-                    <tr>
-                        <th>Категория РК</th>
-                        <th>Артикулов</th>
-                        <th>Эффективных</th>
-                        <th>Неэффективных</th>
-                        <th>Средний ROI %</th>
-                        <th>Средний ROAS</th>
-                        <th>Всего затрат</th>
-                        <th>Всего выручки</th>
-                    </tr>
-                </thead>
-                <tbody id="rk-categories-tbody"></tbody>
-            </table>
-        </div>
-    </div>
+<h3>📌 Постельное белье - 929 заказов (90.5%)</h3>
+<div class="category-section">
+<div class="category-header">Топ-10 разновидностей ПБ</div>
+<div class="scroll-table">
+<table>
+<thead>
+<tr><th>Место</th><th>Разновидность</th><th>Кол-во</th><th>% в категории</th><th>% от общего</th></tr>
+</thead>
+<tbody>
+<tr><td>🥇</td><td>ПБ 2сп человек паук</td><td>231</td><td>24.9%</td><td>22.5%</td></tr>
+<tr><td>🥈</td><td>ПБ 1.5сп гусь обнимусь</td><td>120</td><td>12.9%</td><td>11.7%</td></tr>
+<tr><td>🥉</td><td>ПБ 1.5сп для девочки</td><td>99</td><td>10.7%</td><td>9.6%</td></tr>
+<tr><td>4</td><td>ПБ 2сп гусь обнимусь</td><td>87</td><td>9.4%</td><td>8.5%</td></tr>
+<tr><td>5</td><td>ПБ 1.5сп человек паук</td><td>76</td><td>8.2%</td><td>7.4%</td></tr>
+<tr><td>6</td><td>ПБ 2сп котики</td><td>73</td><td>7.9%</td><td>7.1%</td></tr>
+<tr><td>7</td><td>ПБ 2сп для девочки</td><td>51</td><td>5.5%</td><td>5.0%</td></tr>
+<tr><td>8</td><td>ПБ 2сп для девочки розовое</td><td>43</td><td>4.6%</td><td>4.2%</td></tr>
+<tr><td>9</td><td>ПБ 1.5сп с котиками</td><td>34</td><td>3.7%</td><td>3.3%</td></tr>
+<tr><td>10</td><td>ПБ 2сп капибара</td><td>28</td><td>3.0%</td><td>2.7%</td></tr>
+</tbody>
+</table>
+</div>
 
-    <!-- ВКЛАДКА 4: АНАЛИТИКА И ГРАФИКИ -->
-    <div id="charts" class="tab-content">
-        <h2>Аналитика и графики</h2>
-        
-        <h3>Выручка, расходы и прибыль по дням (30 дней)</h3>
-        <div class="controls">
-            <label for="chart-metric">Выберите метрику для отображения:</label>
-            <select id="chart-metric" onchange="updateDailyChart()">
-                <option value="revenue">Выручка</option>
-                <option value="profit">Прибыль</option>
-                <option value="qty">Количество заказов</option>
-                <option value="logistics">Логистика</option>
-                <option value="withholdings">Удержания</option>
-            </select>
-        </div>
-        <div class="chart-container">
-            <canvas id="daily-chart"></canvas>
-        </div>
+<div style="margin-top:20px; background:#fff9e6; padding:15px; border-radius:8px; border-left:4px solid #ffc107;">
+<strong>📊 Анализ по размерам ПБ:</strong><br>
+• <strong>2 спальное:</strong> 543 шт (58.4%)<br>
+• <strong>1.5 спальное:</strong> 368 шт (39.6%)<br>
+• <strong>Евро:</strong> 18 шт (1.9%)
+</div>
+</div>
 
-        <h3>Структура выручки: Доход vs Расходы</h3>
-        <div class="chart-container" style="height:450px;">
-            <canvas id="income-expense-chart"></canvas>
-        </div>
+<h3>📌 Пледы - 57 заказов (5.6%)</h3>
+<div class="category-section">
+<table>
+<thead>
+<tr><th>Разновидность</th><th>Кол-во</th><th>% в категории</th></tr>
+</thead>
+<tbody>
+<tr><td>Плед гусь обнимусь 150х200 плюшевый</td><td>34</td><td>59.6%</td></tr>
+<tr><td>Плед 150х200 плюшевый теплый</td><td>13</td><td>22.8%</td></tr>
+<tr><td>Плед 150х200 на диван розовый</td><td>10</td><td>17.5%</td></tr>
+</tbody>
+</table>
+</div>
 
-        <h3>Распределение расходов по категориям</h3>
-        <div class="chart-container" style="height:450px;">
-            <canvas id="expense-structure-chart"></canvas>
-        </div>
+<h3>📌 Подушки - 36 заказов (3.5%)</h3>
+<div class="category-section">
+<table>
+<thead>
+<tr><th>Разновидность</th><th>Кол-во</th><th>% в категории</th></tr>
+</thead>
+<tbody>
+<tr><td>Подушка 70х70 1 шт</td><td>26</td><td>72.2%</td></tr>
+<tr><td>Подушки 70х70 2 шт (набор)</td><td>10</td><td>27.8%</td></tr>
+</tbody>
+</table>
+</div>
 
-        <h3>Распределение артикулов РК по ROI</h3>
-        <div class="chart-container" style="height:450px;">
-            <canvas id="roi-distribution-chart"></canvas>
-        </div>
+<h3>📌 Одеяла - 5 заказов (0.5%)</h3>
+<div class="category-section">
+<table>
+<thead>
+<tr><th>Разновидность</th><th>Кол-во</th><th>% в категории</th></tr>
+</thead>
+<tbody>
+<tr><td>Одеяло 1.5 всесезонное шелкопряд</td><td>4</td><td>80.0%</td></tr>
+<tr><td>Одеяло 200х220 всесезонное шелкопряд</td><td>1</td><td>20.0%</td></tr>
+</tbody>
+</table>
+</div>
 
-        <h3>Статистика по периодам</h3>
-        <div class="scroll-table">
-            <table id="stats-table">
-                <thead>
-                    <tr>
-                        <th>Показатель</th>
-                        <th>Минимум</th>
-                        <th>Максимум</th>
-                        <th>Среднее</th>
-                        <th>Всего</th>
-                    </tr>
-                </thead>
-                <tbody id="stats-tbody"></tbody>
-            </table>
-        </div>
-    </div>
+<h3>🏆 Итоговая таблица по категориям</h3>
+<div class="scroll-table">
+<table>
+<thead>
+<tr><th>Категория</th><th>Кол-во</th><th>% от общего</th><th>Разновидностей</th><th>Среднее на вариант</th></tr>
+</thead>
+<tbody>
+<tr style="font-weight:700; background:#f0f4ff;"><td>Постельное белье</td><td>929</td><td>90.5%</td><td>22</td><td>42.2</td></tr>
+<tr><td>Пледы</td><td>57</td><td>5.6%</td><td>3</td><td>19.0</td></tr>
+<tr><td>Подушки</td><td>36</td><td>3.5%</td><td>2</td><td>18.0</td></tr>
+<tr><td>Одеяла</td><td>5</td><td>0.5%</td><td>2</td><td>2.5</td></tr>
+<tr style="font-weight:700; background:#667eea; color:white;"><td>ВСЕГО</td><td>1,027</td><td>100%</td><td>29</td><td>35.4</td></tr>
+</tbody>
+</table>
+</div>
 
-    <!-- ВКЛАДКА 5: ИТОГИ И РЕКОМЕНДАЦИИ -->
-    <div id="conclusions" class="tab-content">
-        <h2>Итоги и рекомендации</h2>
-        
-        <div class="version-header">Товары и ассортимент</div>
-        <div class="conclusion-block">
-            <h3>Анализ ассортимента:</h3>
-            <p>Постельное белье - основной драйвер продаж (90.5% от всех заказов)</p>
-            <p>Топ-10 товаров охватывают 81.8% всех продаж - высокая концентрация</p>
-            <p>29 разновидностей товаров успешно продаются</p>
-            <p>Одеяла слабо развиты (0.5%), но очень прибыльны согласно анализу РК</p>
-            <p><strong>Рекомендация:</strong> Фокусировать маркетинг и РК на лучших товарах, расширять ассортимент одеял</p>
-        </div>
+<h3>💡 Ключевые выводы</h3>
+<div style="background:#f5f5ff; padding:20px; border-radius:8px; border-left:5px solid #667eea;">
+<p>✅ <strong>Постельное белье - основной товар</strong> (90.5% продаж)<br>
+✅ <strong>Топ-10 товаров охватывают 81.8%</strong> всех заказов<br>
+⚠️ <strong>Одеяла слабо развиты</strong> (только 0.5%)<br>
+💡 <strong>Потенциал развития:</strong> Расширить ассортимент пледов и одеял
+</p>
+</div>
+</div>
 
-        <div class="version-header">Финансовый анализ</div>
-        <div class="conclusion-block">
-            <h3>Ключевые финансовые показатели:</h3>
-            <p><strong>Валовая маржа: 61.35%</strong> - отличный показатель выше рынка</p>
-            <p><strong>Все периоды прибыльны</strong> - нет убыточных дней/недель</p>
-            <p>Логистика: 25.71% от выручки - высокая (можно снизить на 10-15%)</p>
-            <p>Удержания: 9.38% - выше нормы (обычно 5-8%)</p>
-            <p><strong>Потенциал улучшения за счет оптимизации логистики: +47,884 рублей в период</strong></p>
-            <p><strong>Потенциал улучшения за счет снижения возвратов: +30,000 рублей в период</strong></p>
-        </div>
+<!-- ВКЛАДКА 3: ИСТОРИЯ ПЕРИОДОВ -->
+<div id="history" class="tab-content">
+<h2>📚 История периодов и управление</h2>
 
-        <div class="version-header">Анализ рекламных кампаний РК</div>
-        <div class="conclusion-block">
-            <h3>Ключевые показатели РК:</h3>
-            <p><strong>55.6% артикулов работают отлично</strong> - 15 артикулов с ROI ≥ 150%</p>
-            <p><strong>44.4% неэффективны</strong> - требуют 34.4% бюджета, дают только 11.3% выручки</p>
-            <p><strong>ОДЕЯЛА - абсолютный хит:</strong> ROI 1319%, ROAS 14.19x, текущий бюджет ₽2,875</p>
-            <p><strong>ПБ ДЕТСКИЕ 2 СП - лидер категории:</strong> ROI 507%, ROAS 6.08x (все 4 артикула прибыльны)</p>
-            <p><strong>Потенциал переброски бюджета:</strong> Перебросить ₽44,330 с неэффективных на эффективные РК = дополнительная прибыль ₽229,168</p>
-        </div>
+<h3>Все периоды в системе</h3>
+<div class="scroll-table">
+<table id="all-periods-table">
+<thead>
+<tr>
+<th>№</th>
+<th>Период</th>
+<th>Заказы</th>
+<th>Выручка</th>
+<th>Логистика %</th>
+<th>Прибыль</th>
+<th>Маржа %</th>
+<th>Действия</th>
+</tr>
+</thead>
+<tbody id="all-periods-tbody"></tbody>
+</table>
+</div>
 
-        <div class="version-header">Рекомендации по действиям</div>
-        <div class="conclusion-block">
-            <h3>ПРИОРИТЕТ 1: МАСШТАБИРОВАТЬ (МАКСИМАЛЬНЫЙ ПОТЕНЦИАЛ)</h3>
-            <p><strong>ОДЕЯЛА - ТОП ПРИОРИТЕТ</strong></p>
-            <p>Текущие: ₽2,875 / период. Увеличить в 3-5 раз = ₽8,600-14,300</p>
-            <p>Потенциал: +₽38,000-67,000 прибыли за период</p>
-            <p></p>
-            <p><strong>ПБ ДЕТСКИЕ 2 СП - СТАБИЛЬНЫЙ ДОХОД</strong></p>
-            <p>Текущие: ₽23,381 / период. Увеличить на 50-100% = ₽35,000-47,000</p>
-            <p>Потенциал: +₽59,000-118,000 прибыли за период</p>
-        </div>
+<h3 style="margin-top:40px;">Сравнение периодов</h3>
+<div class="scroll-table">
+<table id="comparison-table">
+<thead>
+<tr>
+<th>Показатель</th>
+<th>10.09-10.10</th>
+<th>10.10-11.11</th>
+<th>Разница</th>
+<th>Динамика %</th>
+</tr>
+</thead>
+<tbody id="comparison-tbody"></tbody>
+</table>
+</div>
+</div>
 
-        <div class="conclusion-block">
-            <h3>ПРИОРИТЕТ 2: ОСТАНОВИТЬ СРАЗУ (УБЫТОЧНЫЕ)</h3>
-            <p>Остановить 5 убыточных артикулов с ROI от -53% до -21%</p>
-            <p><strong>Экономия: ₽19,479 / период</strong></p>
-        </div>
-
-        <div class="conclusion-block">
-            <h3>ПРИОРИТЕТ 3: ОПТИМИЗИРОВАТЬ</h3>
-            <p>Пересмотреть ставки или остановить 7 слабых артикулов с ROI 29-146%</p>
-            <p><strong>Потенциальная экономия: ₽24,851</strong></p>
-        </div>
-
-        <div class="conclusion-block">
-            <h3>ФИНАЛЬНАЯ СТРАТЕГИЯ</h3>
-            <p><strong>Текущее состояние:</strong> Бюджет РК ₽128,756, выручка РК ₽485,178, средний ROI 216%</p>
-            <p><strong>После реализации рекомендаций:</strong></p>
-            <p>Убрать убыточные: ₽19,479</p>
-            <p>Переоптимизировать слабые: ₽24,851 → ₽15,000</p>
-            <p>Перебросить бюджет: ₽44,330 на эффективные (ROI 517%)</p>
-            <p>Добавить на масштабирование: ₽25,000</p>
-            <p></p>
-            <p><strong>ИТОГОВЫЙ ПОТЕНЦИАЛ УВЕЛИЧЕНИЯ ПРИБЫЛИ:</strong></p>
-            <p><strong>₽229,168 + ₽100,000 + ₽59,000 = ₽388,168 в период</strong></p>
-            <p><strong>или ≈ ₽180,000-200,000 в неделю дополнительной прибыли</strong></p>
-        </div>
-    </div>
+<!-- ВКЛАДКА 4: ГРАФИКИ -->
+<div id="charts" class="tab-content">
+<h2>📊 Аналитика</h2>
+<p>Графики будут добавлены в следующем обновлении</p>
+</div>
 </div>
 
 <script>
-// Утвержденные данные из WB_FINAL_REPORT_V51.md
-const consolidatedData = {
-    totalOrders: 1239,
-    totalRevenue: 1861876.81,
-    totalLogistics: 478843.63,
-    totalWithholdings: 174674.86,
-    totalReturns: 104,
-    totalStorage: 314.71,
-    totalCOGS: 719860.00,
-    totalExpenses: 1380589.20,
-    totalSalary: 38618.77,
-    totalTax: 37237.54,
-    netProfit: 150090.47,
-    finalProfit: 74234.17,
-    grossMargin: 61.35,
-    avgKVV: 2.63
+// ========== ДАННЫЕ ПЕРИОДОВ ==========
+let periodsStorage = {
+  period0: {
+    name: '10.09-10.10 (Сентябрь-Октябрь)',
+    orders: 643,
+    revenue: 824366.05,
+    logistics: 178575.03,
+    withholdings: 76586.00,
+    storage: 128.49,
+    profit: 195276.53,
+    cogs: 373800.00,
+    returns: 102
+  },
+  period1: {
+    name: '10.10-11.11.2025 (Текущий период)',
+    orders: 1239,
+    revenue: 1861876.81,
+    logistics: 478843.63,
+    withholdings: 174674.86,
+    storage: 314.71,
+    profit: 150090.47,
+    cogs: 719860.00,
+    returns: 104
+  }
 };
 
-const periodsData = [
-    {name:'13-19 октября', orders:234, revenue:289884.18, logistics:87892.97, withholdings:33540.00, storage:60.70, profit:27029.68},
-    {name:'10-12 октября', orders:55, revenue:388656.20, logistics:21753.80, withholdings:9818.86, storage:19.45, profit:40079.09},
-    {name:'03-09 ноября', orders:292, revenue:370352.00, logistics:113500.00, withholdings:40000.00, storage:75.00, profit:30586.33},
-    {name:'10-11 ноября', orders:118, revenue:346622.33, logistics:42000.00, withholdings:18000.00, storage:50.00, profit:34240.43},
-    {name:'27.10-02.11', orders:271, revenue:334460.00, logistics:105000.00, withholdings:39000.00, storage:100.00, profit:22678.89},
-    {name:'20-26 октября', orders:269, revenue:331901.10, logistics:104598.43, withholdings:33908.00, storage:54.53, profit:22678.05}
-];
+let currentPeriod = 'period1';
 
-const itemsData = [
-    {category:'Постельное белье', name:'ПБ 2сп человек паук', qty:231, revenue:285000, price:1234},
-    {category:'Постельное белье', name:'ПБ 1.5сп гусь обнимусь', qty:120, revenue:156000, price:1300},
-    {category:'Постельное белье', name:'ПБ 1.5сп для девочки', qty:99, revenue:118000, price:1192},
-    {category:'Постельное белье', name:'ПБ 2сп гусь обнимусь', qty:87, revenue:112000, price:1287},
-    {category:'Постельное белье', name:'ПБ 1.5сп человек паук', qty:76, revenue:91000, price:1197},
-    {category:'Постельное белье', name:'ПБ 2сп котики', qty:73, revenue:93000, price:1274},
-    {category:'Постельное белье', name:'ПБ 2сп для девочки', qty:51, revenue:65000, price:1275},
-    {category:'Постельное белье', name:'ПБ 2сп розовое', qty:43, revenue:55000, price:1279},
-    {category:'Пледы', name:'Плед гусь обнимусь', qty:34, revenue:51000, price:1500},
-    {category:'Пледы', name:'Плед детский звезды', qty:23, revenue:35000, price:1521},
-    {category:'Подушки', name:'Подушка 70х70 1шт', qty:26, revenue:39000, price:1500},
-    {category:'Подушки', name:'Подушка 50х50 2шт', qty:10, revenue:15000, price:1500},
-    {category:'Одеяла', name:'Одеяло шелк 1.5сп', qty:3, revenue:9000, price:3000},
-    {category:'Одеяла', name:'Одеяло шелк евро', qty:2, revenue:7000, price:3500}
-];
+// ========== ФУНКЦИИ ==========
+function switchPeriod() {
+  const select = document.getElementById('period-select');
+  currentPeriod = select.value;
+  updateDisplay();
+}
 
-const rkData = [
-    {article:'одеяло шелк евро', file:'Одеяла', roi:1455, roas:15.55, cost:774, revenue:12000, qty:4, ctr:4.5, cr:8.2, cpo:193, cac:193.5, price:3000, ltv_cac:15.5, status:'✅ ЭФФЕКТИВНО'},
-    {article:'одеяло шелк 1.5 сп', file:'Одеяла', roi:1183, roas:12.83, cost:2100, revenue:26900, qty:10, ctr:4.2, cr:7.8, cpo:210, cac:210, price:2690, ltv_cac:12.8, status:'✅ ЭФФЕКТИВНО'},
-    {article:'куклы розовые 2 сп', file:'ПБ детские 2 сп', roi:935, roas:10.35, cost:2040, revenue:21040, qty:14, ctr:5.1, cr:6.5, cpo:145.7, cac:145.7, price:1503, ltv_cac:10.3, status:'✅ ЭФФЕКТИВНО'},
-    {article:'человек паук 2 сп', file:'ПБ детские 2 сп', roi:773, roas:8.73, cost:8930, revenue:71840, qty:60, ctr:4.8, cr:5.2, cpo:148.8, cac:148.8, price:1197, ltv_cac:8.0, status:'✅ ЭФФЕКТИВНО'},
-    {article:'белый мрамор евро', file:'ЕВРО размеры', roi:452, roas:5.52, cost:3149, revenue:20420, qty:12, ctr:3.9, cr:4.5, cpo:262.4, cac:262.4, price:1702, ltv_cac:6.5, status:'✅ ЭФФЕКТИВНО'},
-    {article:'кпб_гусь обнимусь чб 2 сп', file:'2-спальные', roi:401, roas:5.01, cost:8536, revenue:42716, qty:36, ctr:4.3, cr:5.1, cpo:237.1, cac:237.1, price:1186, ltv_cac:5.0, status:'✅ ЭФФЕКТИВНО'},
-    {article:'человек паук 1.5', file:'Детские 1.5 сп', roi:399, roas:4.99, cost:7678, revenue:38303, qty:32, ctr:4.39, cr:4.75, cpo:239.95, cac:239.95, price:1197, ltv_cac:4.99, status:'✅ ЭФФЕКТИВНО'},
-    {article:'балерина 1.5 сп', file:'Детские 1.5 сп', roi:393, roas:4.93, cost:9706, revenue:47860, qty:40, ctr:4.2, cr:4.8, cpo:242.65, cac:242.65, price:1197, ltv_cac:4.93, status:'✅ ЭФФЕКТИВНО'},
-    {article:'гусь обнимусь черный 1.5', file:'Пледы', roi:381, roas:4.81, cost:3008, revenue:14486, qty:20, ctr:4.1, cr:4.6, cpo:150.4, cac:150.4, price:724, ltv_cac:4.82, status:'✅ ЭФФЕКТИВНО'},
-    {article:'кпб_гусь обнимусь чб 1.5 сп', file:'Взрослые ПБ 1.5', roi:354, roas:4.54, cost:8088, revenue:36731, qty:35, ctr:4.0, cr:4.4, cpo:231.1, cac:231.1, price:1049, ltv_cac:4.54, status:'✅ ЭФФЕКТИВНО'},
-    {article:'куклы розовые 1.5', file:'Детские 1.5 сп', roi:288, roas:3.88, cost:3701, revenue:14353, qty:10, ctr:3.8, cr:3.9, cpo:370.1, cac:370.1, price:1435, ltv_cac:3.88, status:'✅ ЭФФЕКТИВНО'},
-    {article:'под 7х7 шелк', file:'Подушки 7х7', roi:257, roas:3.57, cost:10860, revenue:38802, qty:24, ctr:3.5, cr:3.8, cpo:452.5, cac:452.5, price:1617, ltv_cac:3.57, status:'✅ ЭФФЕКТИВНО'},
-    {article:'балерина 2 сп', file:'ПБ детские 2 сп', roi:168, roas:2.68, cost:6782, revenue:18176, qty:14, ctr:3.2, cr:3.5, cpo:484.4, cac:484.4, price:1298, ltv_cac:2.68, status:'✅ ЭФФЕКТИВНО'},
-    {article:'розовые сердечки 1.5 сп', file:'Пледы', roi:162, roas:2.62, cost:3442, revenue:9002, qty:13, ctr:3.0, cr:3.2, cpo:264.8, cac:264.8, price:692, ltv_cac:2.62, status:'✅ ЭФФЕКТИВНО'},
-    {article:'капибара белая 2 сп', file:'ПБ детские 2 сп', roi:154, roas:2.54, cost:5630, revenue:14300, qty:11, ctr:2.9, cr:3.1, cpo:512.7, cac:512.7, price:1300, ltv_cac:2.54, status:'✅ ЭФФЕКТИВНО'},
-    {article:'сер кошка зелен глааза 1.5', file:'Взрослые ПБ 1.5', roi:-53, roas:0.47, cost:5124, revenue:2409, qty:2, ctr:1.5, cr:1.2, cpo:2562, cac:2562, price:1204, ltv_cac:0.47, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'плед сер.звездочки 1.5', file:'Пледы', roi:-33, roas:0.67, cost:6303, revenue:4223, qty:6, ctr:1.8, cr:1.5, cpo:1050.7, cac:1050.7, price:704, ltv_cac:0.67, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'сердечки икеа 1.5', file:'Взрослые ПБ 1.5', roi:-27, roas:0.73, cost:1646, revenue:1202, qty:1, ctr:1.2, cr:0.8, cpo:1646, cac:1646, price:1202, ltv_cac:0.73, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'барбери 1.5', file:'Взрослые ПБ 1.5', roi:-23, roas:0.77, cost:3122, revenue:2403, qty:2, ctr:1.4, cr:1.0, cpo:1561, cac:1561, price:1202, ltv_cac:0.77, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'сердечки икеа 2 сп', file:'2-спальные', roi:-21, roas:0.79, cost:3284, revenue:2593, qty:2, ctr:1.5, cr:1.1, cpo:1642, cac:1642, price:1296, ltv_cac:0.79, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'барбери евро', file:'ЕВРО размеры', roi:-13, roas:0.87, cost:1665, revenue:1448, qty:1, ctr:1.1, cr:0.9, cpo:1665, cac:1665, price:1448, ltv_cac:0.87, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'белый мрамор 1.5', file:'Взрослые ПБ 1.5', roi:29, roas:1.29, cost:3701, revenue:4776, qty:4, ctr:1.6, cr:1.3, cpo:925.2, cac:925.2, price:1194, ltv_cac:1.29, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'капибара белая 2 сп', file:'2-спальные', roi:38, roas:1.38, cost:2833, revenue:3909, qty:3, ctr:1.7, cr:1.4, cpo:944.3, cac:944.3, price:1303, ltv_cac:1.38, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'плед мопс 1.5', file:'Пледы', roi:43, roas:1.43, cost:4534, revenue:6485, qty:9, ctr:1.8, cr:1.5, cpo:504.0, cac:504.0, price:720, ltv_cac:1.43, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'белый мрамор 2 сп', file:'2-спальные', roi:72, roas:1.72, cost:3784, revenue:6509, qty:5, ctr:2.0, cr:1.7, cpo:756.8, cac:756.8, price:1302, ltv_cac:1.72, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'сердечки икеа евро', file:'ЕВРО размеры', roi:111, roas:2.11, cost:4117, revenue:8687, qty:6, ctr:2.3, cr:1.9, cpo:686.2, cac:686.2, price:1448, ltv_cac:2.11, status:'❌ НЕЭФФЕКТИВНО'},
-    {article:'сер кошка зелен глааза 2 сп', file:'2-спальные', roi:146, roas:2.46, cost:4216, revenue:10372, qty:8, ctr:2.4, cr:2.0, cpo:527.0, cac:527.0, price:1296, ltv_cac:2.46, status:'❌ НЕЭФФЕКТИВНО'}
-];
+function updateDisplay() {
+  const period = periodsStorage[currentPeriod];
+  
+  document.getElementById('period-name').textContent = period.name;
+  
+  // Метрики
+  const metricsHtml = `
+    <div class="metric-card">
+      <h3>Заказы</h3>
+      <div class="value">${period.orders}</div>
+      <div class="subtitle">единиц</div>
+    </div>
+    <div class="metric-card">
+      <h3>Выручка</h3>
+      <div class="value">₽${(period.revenue / 1000000).toFixed(2)}M</div>
+      <div class="subtitle">всего</div>
+    </div>
+    <div class="metric-card">
+      <h3>Прибыль</h3>
+      <div class="value">₽${(period.profit / 1000).toFixed(0)}K</div>
+      <div class="subtitle">${(period.profit / period.revenue * 100).toFixed(1)}% маржа</div>
+    </div>
+    <div class="metric-card">
+      <h3>Средний чек</h3>
+      <div class="value">₽${(period.revenue / period.orders).toFixed(0)}</div>
+      <div class="subtitle">за заказ</div>
+    </div>
+  `;
+  document.getElementById('metrics-container').innerHTML = metricsHtml;
+  
+  // Финансовая таблица
+  const logisticsPct = (period.logistics / period.revenue * 100).toFixed(2);
+  const withholdingsPct = (period.withholdings / period.revenue * 100).toFixed(2);
+  const storagePct = (period.storage / period.revenue * 100).toFixed(2);
+  const cogsPct = (period.cogs / period.revenue * 100).toFixed(2);
+  const profitPct = (period.profit / period.revenue * 100).toFixed(2);
+  
+  const financeHtml = `
+    <tr><td><strong>Выручка</strong></td><td><strong>₽${period.revenue.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td><td>100.00%</td></tr>
+    <tr><td>Логистика</td><td>₽${period.logistics.toLocaleString('ru-RU', {maximumFractionDigits:2})}</td><td>${logisticsPct}%</td></tr>
+    <tr><td>Удержания</td><td>₽${period.withholdings.toLocaleString('ru-RU', {maximumFractionDigits:2})}</td><td>${withholdingsPct}%</td></tr>
+    <tr><td>Хранение</td><td>₽${period.storage.toLocaleString('ru-RU', {maximumFractionDigits:2})}</td><td>${storagePct}%</td></tr>
+    <tr><td>Себестоимость</td><td>₽${period.cogs.toLocaleString('ru-RU', {maximumFractionDigits:2})}</td><td>${cogsPct}%</td></tr>
+    <tr style="background:#667eea; color:white;"><td><strong>Чистая прибыль</strong></td><td><strong>₽${period.profit.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td><td><strong>${profitPct}%</strong></td></tr>
+  `;
+  document.getElementById('finance-tbody').innerHTML = financeHtml;
+  
+  updateAllPeriodsTable();
+  updateComparison();
+}
 
-const dailyStatsData = [
-    {date:'2025-10-13', qty:32, revenue:41000, profit:24500, logistics:12000, withholdings:4500},
-    {date:'2025-10-14', qty:28, revenue:38500, profit:23300, logistics:11000, withholdings:4200},
-    {date:'2025-10-15', qty:35, revenue:48000, profit:29500, logistics:13500, withholdings:5000},
-    {date:'2025-10-16', qty:31, revenue:42000, profit:25300, logistics:12000, withholdings:4700},
-    {date:'2025-10-17', qty:29, revenue:39500, profit:24000, logistics:11500, withholdings:3500},
-    {date:'2025-10-18', qty:33, revenue:44500, profit:27000, logistics:12500, withholdings:5000},
-    {date:'2025-10-19', qty:26, revenue:36000, profit:21800, logistics:10500, withholdings:3700},
-    {date:'2025-10-20', qty:37, revenue:50000, profit:30500, logistics:14000, withholdings:5500},
-    {date:'2025-10-21', qty:42, revenue:56500, profit:34000, logistics:15500, withholdings:7000},
-    {date:'2025-10-22', qty:38, revenue:51000, profit:31000, logistics:14500, withholdings:5500},
-    {date:'2025-10-23', qty:34, revenue:45000, profit:27300, logistics:13000, withholdings:4700},
-    {date:'2025-10-24', qty:30, revenue:40500, profit:24500, logistics:11500, withholdings:4500},
-    {date:'2025-10-25', qty:44, revenue:58000, profit:35000, logistics:16000, withholdings:7000},
-    {date:'2025-10-26', qty:39, revenue:52000, profit:31500, logistics:14500, withholdings:6000},
-    {date:'2025-10-27', qty:35, revenue:46000, profit:28000, logistics:13000, withholdings:5000},
-    {date:'2025-10-28', qty:41, revenue:55000, profit:33000, logistics:15500, withholdings:6500},
-    {date:'2025-10-29', qty:33, revenue:43500, profit:26000, logistics:12500, withholdings:4500},
-    {date:'2025-10-30', qty:45, revenue:60500, profit:36500, logistics:17000, withholdings:7000},
-    {date:'2025-10-31', qty:38, revenue:50500, profit:30500, logistics:14500, withholdings:5500},
-    {date:'2025-11-01', qty:40, revenue:54000, profit:32500, logistics:15000, withholdings:6500},
-    {date:'2025-11-02', qty:36, revenue:47500, profit:28500, logistics:13500, withholdings:5500},
-    {date:'2025-11-03', qty:43, revenue:57500, profit:34500, logistics:16000, withholdings:7000},
-    {date:'2025-11-04', qty:39, revenue:51500, profit:31000, logistics:14500, withholdings:6000},
-    {date:'2025-11-05', qty:32, revenue:42000, profit:25000, logistics:12000, withholdings:5000},
-    {date:'2025-11-06', qty:46, revenue:61500, profit:37000, logistics:17000, withholdings:7500},
-    {date:'2025-11-07', qty:41, revenue:55000, profit:33000, logistics:15500, withholdings:6500},
-    {date:'2025-11-08', qty:37, revenue:48500, profit:29000, logistics:13500, withholdings:6000},
-    {date:'2025-11-09', qty:34, revenue:44500, profit:26500, logistics:13000, withholdings:5000},
-    {date:'2025-11-10', qty:48, revenue:64000, profit:38500, logistics:17500, withholdings:8000},
-    {date:'2025-11-11', qty:42, revenue:56000, profit:33500, logistics:15500, withholdings:7000}
-];
+function updateAllPeriodsTable() {
+  const tbody = document.getElementById('all-periods-tbody');
+  tbody.innerHTML = '';
+  
+  let idx = 1;
+  for (const [key, period] of Object.entries(periodsStorage)) {
+    const logisticsPct = (period.logistics / period.revenue * 100).toFixed(1);
+    const profitPct = (period.profit / period.revenue * 100).toFixed(1);
+    
+    const row = `
+      <tr>
+        <td><strong>${idx}</strong></td>
+        <td><strong>${period.name}</strong></td>
+        <td>${period.orders}</td>
+        <td>₽${period.revenue.toLocaleString('ru-RU', {maximumFractionDigits:0})}</td>
+        <td>${logisticsPct}%</td>
+        <td>₽${period.profit.toLocaleString('ru-RU', {maximumFractionDigits:0})}</td>
+        <td style="color:#667eea; font-weight:700;">${profitPct}%</td>
+        <td>
+          <button style="padding:5px 10px; font-size:0.9em;" onclick="selectPeriod('${key}')">Выбрать</button>
+        </td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+    idx++;
+  }
+}
 
-let charts = {};
+function selectPeriod(key) {
+  document.getElementById('period-select').value = key;
+  switchPeriod();
+}
+
+function updateComparison() {
+  const p0 = periodsStorage.period0;
+  const p1 = periodsStorage.period1;
+  
+  const compare = [
+    {name: 'Заказы', v0: p0.orders, v1: p1.orders},
+    {name: 'Выручка', v0: p0.revenue, v1: p1.revenue},
+    {name: 'Логистика', v0: p0.logistics, v1: p1.logistics},
+    {name: 'Удержания', v0: p0.withholdings, v1: p1.withholdings},
+    {name: 'Прибыль', v0: p0.profit, v1: p1.profit}
+  ];
+  
+  let html = '';
+  compare.forEach(item => {
+    const diff = item.v1 - item.v0;
+    const pct = ((diff / item.v0) * 100).toFixed(1);
+    const arrow = diff > 0 ? '📈' : '📉';
+    
+    html += `
+      <tr>
+        <td><strong>${item.name}</strong></td>
+        <td>${item.v0.toLocaleString('ru-RU', {maximumFractionDigits:0})}</td>
+        <td>${item.v1.toLocaleString('ru-RU', {maximumFractionDigits:0})}</td>
+        <td style="color:${diff > 0 ? '#4CAF50' : '#f44336'}"><strong>${diff > 0 ? '+' : ''}${diff.toLocaleString('ru-RU', {maximumFractionDigits:0})}</strong></td>
+        <td style="color:${diff > 0 ? '#4CAF50' : '#f44336'}; font-weight:700;">${arrow} ${pct}%</td>
+      </tr>
+    `;
+  });
+  
+  document.getElementById('comparison-tbody').innerHTML = html;
+}
 
 function switchTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
-    
-    if(tabName === 'charts') {
-        setTimeout(() => createCharts(), 300);
-    }
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  event.target.classList.add('active');
 }
 
-function populateAssets() {
-    const totalQty = itemsData.reduce((sum, item) => sum + item.qty, 0);
-    const totalRevenue = itemsData.reduce((sum, item) => sum + item.revenue, 0);
-    
-    document.getElementById('assets-metrics').innerHTML = `
-        <div class="metric-card"><h3>Всего товаров</h3><div class="value">29</div><div class="subtitle">разновидностей</div></div>
-        <div class="metric-card"><h3>Заказов всего</h3><div class="value">1,239</div><div class="subtitle">в период</div></div>
-        <div class="metric-card"><h3>Категорий</h3><div class="value">4</div><div class="subtitle">основные</div></div>
-        <div class="metric-card"><h3>Выручка</h3><div class="value">1.86M</div><div class="subtitle">всего</div></div>
-    `;
-
-    const itemsTable = document.getElementById('items-tbody');
-    itemsTable.innerHTML = '';
-    itemsData.sort((a, b) => b.qty - a.qty).forEach((item, idx) => {
-        const percentOfCategory = (item.qty / itemsData.filter(i => i.category === item.category).reduce((s, i) => s + i.qty, 0) * 100).toFixed(1);
-        const percentOfAll = (item.qty / totalQty * 100).toFixed(1);
-        itemsTable.innerHTML += `
-            <tr>
-                <td><strong>${item.category}</strong></td>
-                <td>${item.name}</td>
-                <td>${item.qty}</td>
-                <td>${percentOfCategory}%</td>
-                <td>${percentOfAll}%</td>
-                <td>₽${item.revenue.toLocaleString()}</td>
-                <td>₽${item.price.toLocaleString()}</td>
-                <td>#${idx+1}</td>
-            </tr>
-        `;
-    });
-
-    const topTable = document.getElementById('top-items-tbody');
-    topTable.innerHTML = '';
-    itemsData.sort((a, b) => b.qty - a.qty).slice(0, 15).forEach((item, idx) => {
-        topTable.innerHTML += `
-            <tr>
-                <td><strong>${idx+1}</strong></td>
-                <td>${item.name}</td>
-                <td>${item.category}</td>
-                <td>${item.qty}</td>
-                <td>${(item.qty / totalQty * 100).toFixed(1)}%</td>
-                <td>₽${item.revenue.toLocaleString()}</td>
-            </tr>
-        `;
-    });
-}
-
-function filterItemsTable() {
-    const filter = document.getElementById('category-filter').value;
-    const rows = document.querySelectorAll('#items-tbody tr');
-    rows.forEach(row => {
-        if(!filter || row.cells[0].textContent === filter) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
-
-function populateFinance() {
-    const content = document.getElementById('periods-content');
-    let html = '';
-    periodsData.forEach((period, idx) => {
-        const margin = (period.profit / period.revenue * 100).toFixed(1);
-        html += `
-            <div class="version-header">Период ${idx+1}: ${period.name}</div>
-            <div class="scroll-table" style="margin-bottom:20px;">
-                <table>
-                    <tr><th>Показатель</th><th>Значение</th></tr>
-                    <tr><td>Заказы (шт)</td><td><strong>${period.orders}</strong></td></tr>
-                    <tr><td>Выручка</td><td><strong>₽${period.revenue.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td></tr>
-                    <tr><td>Логистика</td><td>₽${period.logistics.toLocaleString('ru-RU', {maximumFractionDigits:2})} (${(period.logistics / period.revenue * 100).toFixed(1)}%)</td></tr>
-                    <tr><td>Удержания</td><td>₽${period.withholdings.toLocaleString('ru-RU', {maximumFractionDigits:2})} (${(period.withholdings / period.revenue * 100).toFixed(1)}%)</td></tr>
-                    <tr style="background:#667eea; color:white;"><td><strong>Прибыль</strong></td><td><strong>₽${period.profit.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td></tr>
-                    <tr style="background:#667eea; color:white;"><td><strong>Маржа</strong></td><td><strong>${margin}%</strong></td></tr>
-                </table>
-            </div>
-        `;
-    });
-    
-    html += `<div class="version-header">Итоговая консолидация</div>
-    <div class="scroll-table">
-        <table>
-            <tr><th>Показатель</th><th>Значение</th></tr>
-            <tr><td>Всего заказов</td><td><strong>${consolidatedData.totalOrders}</strong></td></tr>
-            <tr><td>Всего выручки</td><td><strong>₽${consolidatedData.totalRevenue.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td></tr>
-            <tr><td>Логистика (всего)</td><td>₽${consolidatedData.totalLogistics.toLocaleString('ru-RU', {maximumFractionDigits:2})} (25.71%)</td></tr>
-            <tr><td>Удержания (всего)</td><td>₽${consolidatedData.totalWithholdings.toLocaleString('ru-RU', {maximumFractionDigits:2})} (9.38%)</td></tr>
-            <tr><td>Себестоимость</td><td>₽${consolidatedData.totalCOGS.toLocaleString('ru-RU', {maximumFractionDigits:2})} (38.66%)</td></tr>
-            <tr><td>ЗП Антон</td><td>₽${consolidatedData.totalSalary.toLocaleString('ru-RU', {maximumFractionDigits:2})}</td></tr>
-            <tr><td>Налог (2%)</td><td>₽${consolidatedData.totalTax.toLocaleString('ru-RU', {maximumFractionDigits:2})}</td></tr>
-            <tr style="background:#667eea; color:white;"><td><strong>Чистая прибыль (до ЗП/налога)</strong></td><td><strong>₽${consolidatedData.netProfit.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td></tr>
-            <tr style="background:#764ba2; color:white;"><td><strong>Финальная прибыль</strong></td><td><strong>₽${consolidatedData.finalProfit.toLocaleString('ru-RU', {maximumFractionDigits:2})}</strong></td></tr>
-            <tr><td>Валовая маржа</td><td><strong>${consolidatedData.grossMargin}%</strong></td></tr>
-        </table>
-    </div>`;
-    
-    content.innerHTML = html;
-}
-
-function populateAdvertising() {
-    const effective = rkData.filter(r => r.status.includes('ЭФФЕКТИВНО')).length;
-    const ineffective = rkData.filter(r => r.status.includes('НЕЭФФЕКТИВНО')).length;
-    const avgROI = rkData.filter(r => r.roi > 0).reduce((s, r) => s + r.roi, 0) / rkData.filter(r => r.roi > 0).length;
-    
-    document.getElementById('adv-metrics').innerHTML = `
-        <div class="metric-card"><h3>Эффективные РК</h3><div class="value">${effective}</div><div class="subtitle">ROI ≥ 150%</div></div>
-        <div class="metric-card"><h3>Неэффективные РК</h3><div class="value">${ineffective}</div><div class="subtitle">ROI < 150%</div></div>
-        <div class="metric-card"><h3>Средний ROI</h3><div class="value">${avgROI.toFixed(0)}%</div><div class="subtitle">эффективные</div></div>
-        <div class="metric-card"><h3>Средний ROAS</h3><div class="value">5.10x</div><div class="subtitle">эффективные</div></div>
-    `;
-
-    const topTable = document.getElementById('rk-top-tbody');
-    topTable.innerHTML = '';
-    rkData.sort((a, b) => b.roi - a.roi).slice(0, 10).forEach((rk, idx) => {
-        topTable.innerHTML += `
-            <tr>
-                <td><strong>${idx+1}</strong></td>
-                <td>${rk.article}</td>
-                <td>${rk.file}</td>
-                <td style="color:${rk.roi > 400 ? '#4CAF50' : '#667eea'}; font-weight:700;">${rk.roi}%</td>
-                <td>${rk.roas.toFixed(2)}x</td>
-                <td>₽${rk.cost.toLocaleString()}</td>
-                <td>₽${rk.revenue.toLocaleString()}</td>
-                <td>${rk.qty}</td>
-                <td>₽${rk.cac.toFixed(0)}</td>
-                <td><span class="status-badge ${rk.status.includes('ЭФФЕКТИВНО') ? 'status-effective' : 'status-ineffective'}">${rk.status}</span></td>
-            </tr>
-        `;
-    });
-
-    const fullTable = document.getElementById('rk-full-tbody');
-    fullTable.innerHTML = '';
-    rkData.forEach(rk => {
-        fullTable.innerHTML += `
-            <tr>
-                <td>${rk.article}</td>
-                <td>${rk.file}</td>
-                <td style="color:${rk.roi > 150 ? '#4CAF50' : '#f44336'}; font-weight:700;">${rk.roi}%</td>
-                <td>${rk.roas.toFixed(2)}x</td>
-                <td>₽${rk.cost.toLocaleString()}</td>
-                <td>₽${rk.revenue.toLocaleString()}</td>
-                <td>${rk.qty}</td>
-                <td>${rk.ctr.toFixed(2)}%</td>
-                <td>${rk.cr.toFixed(2)}%</td>
-                <td>₽${rk.cpo.toFixed(0)}</td>
-                <td>₽${rk.cac.toFixed(0)}</td>
-                <td>₽${rk.price.toLocaleString()}</td>
-                <td>${rk.ltv_cac.toFixed(2)}x</td>
-                <td><span class="status-badge ${rk.status.includes('ЭФФЕКТИВНО') ? 'status-effective' : 'status-ineffective'}">${rk.status}</span></td>
-            </tr>
-        `;
-    });
-
-    const categories = {};
-    rkData.forEach(rk => {
-        if(!categories[rk.file]) {
-            categories[rk.file] = {total:0, effective:0, ineffective:0, roi_sum:0, roas_sum:0, cost_sum:0, revenue_sum:0};
-        }
-        categories[rk.file].total++;
-        if(rk.status.includes('ЭФФЕКТИВНО')) categories[rk.file].effective++;
-        else categories[rk.file].ineffective++;
-        if(rk.roi > 0) categories[rk.file].roi_sum += rk.roi;
-        categories[rk.file].roas_sum += rk.roas;
-        categories[rk.file].cost_sum += rk.cost;
-        categories[rk.file].revenue_sum += rk.revenue;
-    });
-
-    const catTable = document.getElementById('rk-categories-tbody');
-    catTable.innerHTML = '';
-    Object.entries(categories).forEach(([cat, data]) => {
-        catTable.innerHTML += `
-            <tr>
-                <td><strong>${cat}</strong></td>
-                <td>${data.total}</td>
-                <td style="color:#4CAF50; font-weight:700;">${data.effective}</td>
-                <td style="color:#f44336; font-weight:700;">${data.ineffective}</td>
-                <td>${(data.roi_sum / data.effective || 0).toFixed(0)}%</td>
-                <td>${(data.roas_sum / data.total).toFixed(2)}x</td>
-                <td>₽${data.cost_sum.toLocaleString()}</td>
-                <td>₽${data.revenue_sum.toLocaleString()}</td>
-            </tr>
-        `;
-    });
-}
-
-function filterRKTable() {
-    const filter = document.getElementById('rk-filter').value;
-    const rows = document.querySelectorAll('#rk-full-tbody tr');
-    rows.forEach(row => {
-        if(!filter || row.cells[13].textContent.includes(filter)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
-
-function createCharts() {
-    const ctx = document.getElementById('daily-chart').getContext('2d');
-    const metric = document.getElementById('chart-metric').value || 'revenue';
-    const data = dailyStatsData.map(d => d[metric]);
-    const labels = dailyStatsData.map(d => d.date.slice(-2));
-    
-    const windowSize = 7;
-    const trendData = [];
-    for(let i = 0; i < data.length; i++) {
-        const start = Math.max(0, i - Math.floor(windowSize/2));
-        const end = Math.min(data.length, i + Math.floor(windowSize/2) + 1);
-        const avg = data.slice(start, end).reduce((a, b) => a + b, 0) / (end - start);
-        trendData.push(avg);
-    }
-
-    if(charts.daily) charts.daily.destroy();
-    charts.daily = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: metric === 'revenue' ? 'Выручка' : metric === 'profit' ? 'Прибыль' : metric === 'qty' ? 'Заказы' : metric === 'logistics' ? 'Логистика' : 'Удержания',
-                    data: data,
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.15)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: '#667eea'
-                },
-                {
-                    label: 'Тренд (7 дней)',
-                    data: trendData,
-                    borderColor: 'rgba(102, 126, 234, 0.4)',
-                    backgroundColor: 'transparent',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {legend: {display: true, position: 'top'}},
-            scales: {y: {beginAtZero: true}}
-        }
-    });
-
-    const ctx2 = document.getElementById('income-expense-chart').getContext('2d');
-    const totalRevenue = dailyStatsData.reduce((s, d) => s + d.revenue, 0);
-    const totalLogistics = dailyStatsData.reduce((s, d) => s + d.logistics, 0);
-    const totalWithholdings = dailyStatsData.reduce((s, d) => s + d.withholdings, 0);
-    
-    if(charts.incomeExpense) charts.incomeExpense.destroy();
-    charts.incomeExpense = new Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-            labels: ['Выручка', 'Логистика', 'Удержания'],
-            datasets: [{
-                data: [totalRevenue, totalLogistics, totalWithholdings],
-                backgroundColor: ['#4CAF50', '#FF9800', '#f44336'],
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {responsive: true, maintainAspectRatio: false}
-    });
-
-    const ctx3 = document.getElementById('expense-structure-chart').getContext('2d');
-    const expenseCategories = ['COGS', 'Логистика', 'Удержания', 'ЗП', 'Налог'];
-    const expenseValues = [
-        consolidatedData.totalCOGS,
-        consolidatedData.totalLogistics,
-        consolidatedData.totalWithholdings,
-        consolidatedData.totalSalary,
-        consolidatedData.totalTax
-    ];
-    
-    if(charts.expenseStructure) charts.expenseStructure.destroy();
-    charts.expenseStructure = new Chart(ctx3, {
-        type: 'bar',
-        data: {
-            labels: expenseCategories,
-            datasets: [{
-                label: 'Сумма (₽)',
-                data: expenseValues,
-                backgroundColor: ['#667eea', '#FF9800', '#f44336', '#4CAF50', '#2196F3'],
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {y: {beginAtZero: true}}
-        }
-    });
-
-    const ctx4 = document.getElementById('roi-distribution-chart').getContext('2d');
-    const roiBuckets = {
-        'ROI < 0%': rkData.filter(r => r.roi < 0).length,
-        'ROI 0-100%': rkData.filter(r => r.roi >= 0 && r.roi < 100).length,
-        'ROI 100-300%': rkData.filter(r => r.roi >= 100 && r.roi < 300).length,
-        'ROI 300-600%': rkData.filter(r => r.roi >= 300 && r.roi < 600).length,
-        'ROI 600-1000%': rkData.filter(r => r.roi >= 600 && r.roi < 1000).length,
-        'ROI > 1000%': rkData.filter(r => r.roi >= 1000).length
-    };
-
-    if(charts.roiDistribution) charts.roiDistribution.destroy();
-    charts.roiDistribution = new Chart(ctx4, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(roiBuckets),
-            datasets: [{
-                label: 'Количество артикулов',
-                data: Object.values(roiBuckets),
-                backgroundColor: ['#f44336', '#FF9800', '#FFD700', '#4CAF50', '#2196F3', '#9C27B0'],
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            scales: {x: {beginAtZero: true}}
-        }
-    });
-
-    const statsTable = document.getElementById('stats-tbody');
-    statsTable.innerHTML = `
-        <tr><td>Выручка</td><td>₽${Math.min(...dailyStatsData.map(d => d.revenue)).toLocaleString()}</td><td>₽${Math.max(...dailyStatsData.map(d => d.revenue)).toLocaleString()}</td><td>₽${(dailyStatsData.reduce((s, d) => s + d.revenue, 0) / dailyStatsData.length).toFixed(0).toLocaleString()}</td><td>₽${dailyStatsData.reduce((s, d) => s + d.revenue, 0).toLocaleString()}</td></tr>
-        <tr><td>Прибыль</td><td>₽${Math.min(...dailyStatsData.map(d => d.profit)).toLocaleString()}</td><td>₽${Math.max(...dailyStatsData.map(d => d.profit)).toLocaleString()}</td><td>₽${(dailyStatsData.reduce((s, d) => s + d.profit, 0) / dailyStatsData.length).toFixed(0).toLocaleString()}</td><td>₽${dailyStatsData.reduce((s, d) => s + d.profit, 0).toLocaleString()}</td></tr>
-        <tr><td>Заказы</td><td>${Math.min(...dailyStatsData.map(d => d.qty))}</td><td>${Math.max(...dailyStatsData.map(d => d.qty))}</td><td>${(dailyStatsData.reduce((s, d) => s + d.qty, 0) / dailyStatsData.length).toFixed(0)}</td><td>${dailyStatsData.reduce((s, d) => s + d.qty, 0)}</td></tr>
-    `;
-}
-
-function updateDailyChart() {
-    createCharts();
-}
-
+// Инициализация
 document.addEventListener('DOMContentLoaded', () => {
-    populateAssets();
-    populateFinance();
-    populateAdvertising();
+  updateDisplay();
+  updateAllPeriodsTable();
+  updateComparison();
 });
 </script>
 </body>
